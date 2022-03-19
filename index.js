@@ -1,6 +1,15 @@
 const titleRegex = /(\w*)(?:\((\w*)\))?: (.*)/
 const {getType, hasTitleChanged} = require('./utils')
 
+const HTTPS_PROXY = process.env.HTTPS_PROXY
+if (null != HTTPS_PROXY) {
+  console.log('HTTPS_PROXY:', HTTPS_PROXY)
+  const agent = require('global-agent')
+  process.env.GLOBAL_AGENT_HTTP_PROXY=process.env.HTTPS_PROXY
+  process.env.GLOBAL_AGENT_NO_PROXY='localhost'
+  agent.bootstrap()
+}
+
 module.exports = app => {
   app.on(['pull_request.opened'], async context => {
     const {owner, repo} = context.repo()
